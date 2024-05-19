@@ -25,13 +25,16 @@ export const executeOrder = async (order: any): Promise<any> => {
 export const cancelOrder = async (order: any): Promise<any> => {
   const wallet = toRaw(useWalletStore.getWallet);
   const contract = new ethers.Contract(import.meta.env.VITE_CONTRACT_ADDRESS, JSON.stringify(abi), wallet.signer);
-  const tx = contract.cancelOrder([
-    order.seller,
-    order.listHash,
-    order.tick,
-    order.amount,
-    order.price,
-    import.meta.env.VITE_SERVICE_FEE,
-    order.signature,
-  ]);
+  const tx = contract.cancelOrder(
+    [
+      order.seller,
+      order.listHash,
+      order.tick,
+      order.amount,
+      order.price,
+      import.meta.env.VITE_SERVICE_FEE,
+      order.signature,
+    ],
+    { gasLimit: 300000 },
+  );
 };

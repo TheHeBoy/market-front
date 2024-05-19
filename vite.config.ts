@@ -1,5 +1,5 @@
-import {defineConfig, loadEnv} from 'vite';
-import {resolve} from 'path';
+import { defineConfig, loadEnv } from 'vite';
+import { resolve } from 'path';
 import presets from './presets/presets';
 
 // https://vitejs.dev/config/
@@ -38,6 +38,7 @@ export default defineConfig((env) => {
       },
     },
     build: {
+      target: ['esnext'],
       reportCompressedSize: false,
       // 消除打包大小超过500kb警告
       chunkSizeWarningLimit: 2000,
@@ -49,6 +50,17 @@ export default defineConfig((env) => {
           chunkFileNames: 'static/js/[name]-[hash].js',
           entryFileNames: 'static/js/[name]-[hash].js',
           assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
+        },
+      },
+    },
+    optimizeDeps: {
+      esbuildOptions: {
+        target: 'esnext',
+        define: {
+          global: 'globalThis',
+        },
+        supported: {
+          bigint: true,
         },
       },
     },

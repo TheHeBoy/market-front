@@ -21,8 +21,8 @@
             <div class="bg-[#2b2d33] p-2">
               <div># {{ token.inscriptionsNum }}</div>
               <div>
-                <el-button link type="primary" @click="transferBtnClick(token)">Transfer</el-button>
-                <el-button link type="primary" @click="listBtnClick(token)">List</el-button>
+                <el-button v-if="isSelf" link type="primary" @click="transferBtnClick(token)">Transfer</el-button>
+                <el-button v-if="isSelf" link type="primary" @click="listBtnClick(token)">List</el-button>
               </div>
             </div>
           </div>
@@ -64,10 +64,13 @@
             <div class="bg-[#2b2d33] p-2">
               <div class="flex justify-between">
                 <div class="font-bold">{{ ethers.formatEther(order.price) }} ETH</div>
-                <el-button v-if="order.status === '2'" link type="primary" @click="cancelBtnClick(order)"
-                  >Cancel</el-button
+                <el-button v-if="order.status === '2' && isSelf" link type="primary" @click="cancelBtnClick(order)"
+                  >Cancel
+                </el-button>
+
+                <el-button v-if="order.status === '4' && isSelf" link type="primary" @click="signBtnClick(order)"
+                  >Sign</el-button
                 >
-                <el-button v-if="order.status === '4'" link type="primary" @click="signBtnClick(order)">Sign</el-button>
                 <ElTag type="success" v-if="order.status === '3'">Sold</ElTag>
                 <ElTag type="info" v-if="order.status === '5'">Canceled</ElTag>
                 <ElTag type="" v-if="order.status === '1'">WaitList</ElTag>
@@ -106,7 +109,7 @@
       <template #footer>
         <div class="text-center">
           <el-button link @click="transferDialogVisible = false">Cancel</el-button>
-          <el-button link type="primary" @click="transferClick"> Transfer</el-button>
+          <el-button link type="primary" @click="transferClick">Transfer</el-button>
         </div>
       </template>
     </el-dialog>
@@ -160,7 +163,7 @@
     </el-dialog>
   </div>
 </template>
-<script setup>
+<script lang="ts" setup>
 import avatar from '@/assets/svg/avatar.svg?component';
 import useWalletStoreWithOut from '@/store/wallet';
 import { formatDate } from '@/utils/formatTime';
@@ -182,14 +185,14 @@ const transferBtnClick = (token) => {
   transferToken.value = token;
   transferDialogVisible.value = true;
 };
-const transferToken = ref({});
+const transferToken = ref();
 const transferDialogVisible = ref(false);
 const transferForm = reactive({
   amount: undefined,
   to: '',
 });
 const transferClick = () => {
-  inscribeTransfer(transferToken.tick, transferForm.amount, transferForm.to);
+  inscribeTransfer(transferToken.value.tick, transferForm.amount, transferForm.to);
   transferDialogVisible.value = false;
 };
 
@@ -198,7 +201,7 @@ const listBtnClick = (token) => {
   listToken.value = token;
   listDialogVisible.value = true;
 };
-const listToken = ref({});
+const listToken = ref();
 const listDialogVisible = ref(false);
 
 const listForm = reactive({
@@ -244,7 +247,7 @@ const sign = async (listHash, tick, amount, price) => {
     ],
   };
 
-  const order = {
+  const order: any = {
     seller: useWalletStore.getWallet.address,
     tick: tick,
     listHash: listHash,
@@ -258,7 +261,7 @@ const sign = async (listHash, tick, amount, price) => {
 };
 
 const signDialogVisible = ref(false);
-const signOrder = ref({});
+const signOrder = ref();
 const signBtnClick = async (order) => {
   signOrder.value = order;
   signDialogVisible.value = true;
@@ -285,9 +288,18 @@ onMounted(async () => {
   await requestData();
 });
 
+const route = useRoute();
+const address = ref();
+const isSelf = computed(() => useWalletStore.getWallet.address === address.value);
 const requestData = async () => {
-  tokenData.value = await TokensApi.getByAddress(useWalletStore.getWallet.address);
-  msc20Data.value = await Msc20Api.getByAddress(useWalletStore.getWallet.address);
-  orderData.value = await OrderApi.getByAddress(useWalletStore.getWallet.address);
+  let addressParam = route.params.address as string;
+  if (addressParam) {
+    address.value = addressParam;
+  } else {
+    address.value = useWalletStore.getWallet.address;
+  }
+  tokenData.value = await TokensApi.getByAddress(address.value);
+  msc20Data.value = await Msc20Api.getByAddress(address.value);
+  orderData.value = await OrderApi.getByAddress(address.value);
 };
 </script>

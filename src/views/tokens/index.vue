@@ -6,9 +6,11 @@
           <span class="text-lg font-bold">All mint Tokens</span>
         </div>
         <div class="w-100">
-          <el-input v-model="searchTick" size="large" placeholder="Please input tick">
-            <template #append>
-              <el-button :icon="Search" />
+          <el-input v-model="searchTick" @keyup.enter="search" size="large" placeholder="Please input tick">
+            <template #suffix>
+              <button class="flex items-center" @click="search">
+                <el-icon> <Search /></el-icon>
+              </button>
             </template>
           </el-input>
         </div>
@@ -70,7 +72,6 @@
 
 <script setup lang="ts">
 import * as TokensApi from '@/api/modules/tokens';
-import { PageParam } from '@/api/modules/interface';
 import { onMounted } from 'vue';
 import { formatDate } from '@/utils/formatTime';
 import { Search } from '@element-plus/icons-vue';
@@ -83,20 +84,11 @@ const tableData = ref({
   list: [],
 });
 
-const pageParam: PageParam = reactive({
+const pageParam = reactive({
   pageNo: 1,
   pageSize: 10,
+  tick: '',
 });
-
-const requestData = () => {
-  TokensApi.page(pageParam)
-    .then((res) => {
-      tableData.value = res;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
 
 const handleCurrentChange = (val) => {
   pageParam.pageNo = val;
@@ -129,6 +121,25 @@ const mintClick = () => {
 };
 
 const mintDialogVisible = ref(false);
+
+const search = () => {
+  if (searchTick.value) {
+    pageParam.pageNo = 1;
+    pageParam.tick = searchTick.value;
+    requestData();
+  }
+};
+
+const requestData = () => {
+  TokensApi.page(pageParam)
+    .then((res) => {
+      tableData.value = res;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 onMounted(() => {
   requestData();
 });

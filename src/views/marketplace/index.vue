@@ -6,9 +6,11 @@
           <span class="text-lg font-bold">All Listing orders</span>
         </div>
         <div class="w-100">
-          <el-input v-model="searchTick" size="large" placeholder="Please input tick">
-            <template #append>
-              <el-button :icon="Search" />
+          <el-input v-model="searchTick" @keyup.enter="search" size="large" placeholder="Please input tick">
+            <template #suffix>
+              <button class="flex items-center" @click="search">
+                <el-icon> <Search /></el-icon>
+              </button>
             </template>
           </el-input>
         </div>
@@ -66,14 +68,11 @@ const tableData = ref({
   list: [],
 });
 
-const pageParam: PageParam = reactive({
+const pageParam = reactive({
   pageNo: 1,
   pageSize: 10,
+  tick: '',
 });
-
-const requestData = async () => {
-  tableData.value = await TokensApi.pageListing(pageParam);
-};
 
 const handleCurrentChange = (val) => {
   pageParam.pageNo = val;
@@ -81,10 +80,22 @@ const handleCurrentChange = (val) => {
 };
 
 const router = useRouter();
-
 const rowClick = (row: any) => {
   router.push({ name: 'order', params: { tick: row.tick } });
 };
+
+const search = () => {
+  if (searchTick.value) {
+    pageParam.pageNo = 1;
+    pageParam.tick = searchTick.value;
+    requestData();
+  }
+};
+
+const requestData = async () => {
+  tableData.value = await TokensApi.pageListing(pageParam);
+};
+
 onMounted(async () => {
   await requestData();
 });

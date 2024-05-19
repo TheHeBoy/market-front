@@ -5,9 +5,10 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
+    "test": "vite --mode test",
     "build": "vue-tsc --noEmit --skipLibCheck && vite build",
     "lint": "eslint src",
-    "preview": "vite preview",
+    "preview": "ite preview",
     "prepare": "husky install"
   },
   "dependencies": {

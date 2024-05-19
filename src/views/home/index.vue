@@ -1,7 +1,7 @@
 <template>
   <div class="w-300 m-auto h-full">
     <div class="text-2xl ml-2 font-bold">Latest Inscriptions</div>
-    <div class="flex-grow" v-infinite-scroll="load">
+    <div class="flex-grow" v-infinite-scroll="load" infinite-scroll-immediate="false">
       <div class="flex flex-wrap">
         <div v-for="inscription in inscriptionsData.list" :key="inscription.id" class="w-48 shadow-lg ml-2 mt-2">
           <div class="flex flex-col h-46 font-bold bg-[#181a1f] p-2">

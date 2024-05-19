@@ -28,7 +28,6 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     const { data } = response;
-    console.log(data);
     if (data.code === 200) {
       return data.data;
     } else if (data.code === 500) {

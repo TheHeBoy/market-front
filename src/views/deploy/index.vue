@@ -33,8 +33,8 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
-import {inscribeDeploy} from '@/utils/inscribe';
+import { ref } from 'vue';
+import { inscribeDeploy } from '@/utils/inscribe';
 
 const form = ref({
   protocol: 'ASC-20',
@@ -45,15 +45,15 @@ const form = ref({
 const ruleFormRef = ref();
 
 // 定义验证规则
-const rules = reactive({
-  tick: [{required: true, message: 'Please input tick name', trigger: 'blur'}],
+const rules = reactive<any>({
+  tick: [{ required: true, message: 'Please input tick name', trigger: 'blur' }],
   totalSupply: [
-    {required: true, message: 'Total Supply cannot be empty', trigger: 'change'},
-    {type: 'number', min: 1, message: 'Total Supply must be greater than 0', trigger: 'change'},
+    { required: true, message: 'Total Supply cannot be empty', trigger: 'change' },
+    { type: 'number', min: 1, message: 'Total Supply must be greater than 0', trigger: 'change' },
   ],
   limitPerMint: [
-    {required: true, message: 'Limit Per Mint cannot be empty', trigger: 'change'},
-    {type: 'number', min: 1, message: 'Limit Per Mint must be greater than 0', trigger: 'change'},
+    { required: true, message: 'Limit Per Mint cannot be empty', trigger: 'change' },
+    { type: 'number', min: 1, message: 'Limit Per Mint must be greater than 0', trigger: 'change' },
   ],
 });
 
@@ -68,17 +68,16 @@ const submitForm = async (formEl?) => {
         return;
       }
 
-      inscribeDeploy(ins.tick, ins.totalSupply, ins.limitPerMint).then((res) => {
-        ElMessage.success('Deployed successfully');
-      }).catch((err) => {
-        ElMessage.error('Deploy failed');
-      });
+      inscribeDeploy(ins.tick, ins.totalSupply, ins.limitPerMint)
+        .then((res) => {
+          ElMessage.success('Deployed successfully');
+        })
+        .catch((err) => {
+          ElMessage.error('Deploy failed');
+        });
     }
   });
 };
-
-
 </script>
 
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>
